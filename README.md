@@ -1,4 +1,4 @@
-# Library – API
+# Library - API
 
 A simple REST API for keeping track of a library's book collection, built with
 **Symfony 8** (PHP 8.4, FrankenPHP) and a **PostgreSQL 17** database. The whole
@@ -112,13 +112,13 @@ Errors share a consistent JSON shape, e.g.:
 
 ## Concurrency (race conditions)
 
-- **Adding** – serial-number uniqueness is enforced by a `UNIQUE` constraint in
+- **Adding** - serial-number uniqueness is enforced by a `UNIQUE` constraint in
   the database. When the same number is added concurrently, the second operation
   ends with `409` (the `UniqueConstraintViolationException` is caught) instead of
   creating a duplicate.
-- **Changing status** – borrowing/returning runs inside a transaction with a
+- **Changing status** - borrowing/returning runs inside a transaction with a
   row-level lock (`SELECT ... FOR UPDATE`, `LockMode::PESSIMISTIC_WRITE`). As a
-  result, two concurrent requests to borrow the same book are serialised – only
+  result, two concurrent requests to borrow the same book are serialised - only
   the first succeeds, the second gets `409`. The entity also has a `version`
   column (optimistic locking) as an extra safeguard against lost updates.
 
@@ -126,12 +126,12 @@ Errors share a consistent JSON shape, e.g.:
 
 ```
 src/
-├── Catalog/         # Catalog – application logic, transactions and locking
+├── Catalog/         # Catalog - application logic, transactions and locking
 ├── Controller/      # thin HTTP layer (BookController, HealthController)
 ├── Dto/             # request/response objects + validation
 ├── Entity/          # the Book entity with domain logic (borrow / returnToLibrary)
 ├── Enum/            # BookStatus
-├── EventListener/   # JsonExceptionListener – consistent JSON errors
+├── EventListener/   # JsonExceptionListener - consistent JSON errors
 ├── Exception/       # domain exceptions mapped to HTTP status codes
 └── Repository/      # queries, including the locked read for updates
 ```
@@ -145,9 +145,9 @@ the DTOs (`#[MapRequestPayload]`).
 
 The suite has two layers:
 
-- **Unit tests** (`tests/Unit/`) – domain invariants of the `Book` entity and the
+- **Unit tests** (`tests/Unit/`) - domain invariants of the `Book` entity and the
   DTO validation rules. No database, no kernel.
-- **Functional tests** (`tests/Functional/`) – the HTTP API end to end through the
+- **Functional tests** (`tests/Functional/`) - the HTTP API end to end through the
   Symfony kernel against a real PostgreSQL database: status codes, validation
   errors, borrow/return flow, conflicts and not-found cases.
 
