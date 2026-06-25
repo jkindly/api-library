@@ -1,0 +1,25 @@
+# Production overlay: deploy behind an existing nginx reverse proxy.
+#
+#   docker compose -f compose.yaml -f compose.prod.yaml up -d --build
+#
+# Requires an untracked .env.local next to this file containing at least:
+#   APP_SECRET=<a long random string>
+# and, if you point at an external PostgreSQL instead of the bundled one:
+#   DATABASE_URL=postgresql://user:pass@host:5432/dbname?serverVersion=17&charset=utf8
+services:
+    database:
+        restart: unless-stopped
+        # Do NOT publish PostgreSQL to the host on a public server; it stays
+        # reachable only on the internal compose network by the app service.
+        ports: !reset []
+
+    app:
+        restart: unless-stopped
+        # Bind only to loopback; the host's nginx reverse-proxies to this.
+        ports: !override
+            - "127.0.0.1:8080:80"
+        # Inject real secrets/overrides into the container environment. Values
+        # here take precedence over the dummy ones baked into the image .env.
+        env_file:
+            - path: .env.local
+              required: true

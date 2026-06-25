@@ -1,0 +1,7 @@
+/.env.local
+/.env.*.local
+/var/
+/vendor/
+/.phpunit.cache/
+/.idea/
+.DS_Store

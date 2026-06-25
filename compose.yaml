@@ -1,0 +1,32 @@
+services:
+    database:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_DB: app
+            POSTGRES_USER: app
+            POSTGRES_PASSWORD: app
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U app -d app"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+        volumes:
+            - database_data:/var/lib/postgresql/data
+            # Provisions the separate app_test database on first cluster init.
+            - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+        ports:
+            - "5432:5432"
+
+    app:
+        build: .
+        depends_on:
+            database:
+                condition: service_healthy
+        # APP_ENV / APP_SECRET / DATABASE_URL come from the .env files baked into
+        # the image (the dummy APP_SECRET is fine for local dev). In production they
+        # are overridden via compose.prod.yaml + an untracked .env.local.
+        ports:
+            - "8080:80"
+
+volumes:
+    database_data:

@@ -1,0 +1,9 @@
+.git/
+.gitignore
+.idea/
+var/
+vendor/
+.env.local
+.env.*.local
+docker-compose.override.yaml
+README.md
